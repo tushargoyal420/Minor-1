@@ -1,212 +1,22 @@
 #include<stdio.h>
-//#include<conio.h>
 #include<time.h>
 # define Infinity 9999
 # define Max 100
-void dijikstra(int G[Max][Max],int n,int startnode)
-{
-	int cost[Max][Max]; /*Minimum distance to reach i node to j node  for every (cost[i][j]) */
-	int distance[Max]; /* distance to i node from starting node*/
-	int visited[Max]; /*0 if the node is not visited, 1 if the node is visited*/
-	int mindistance; /*Temp variable for calculating min distance*/
-	int visitednode; //no. of node which is visited recently
-	int i,j,count=1; // Loop variables
-	int pred[Max];
-	for(i=0;i < n;i++)
-	{
-		for(j=0;j<n;j++)
-		{
-			if(G[i][j]==0)
-			{
-				cost[i][j]=Infinity;
-			}
-			else
-			{
-				cost[i][j]=G[i][j];
-	        }
-	    }
-	}      
-	
-	for(i=0;i< n;i++)
-	{
-		distance[i]=cost[startnode][i];
-		pred[i]=startnode;      //it should not be an array
-		visited[i]=0;      // i node is not visited
-	}
-	distance[startnode]=0;
-	visited[startnode]=1;       //starting node is visited
-	while(count < n-1)
-	{
-		mindistance=Infinity;
-		for(i=0;i<n;i++)
-		{
-			if((distance[i] < mindistance)&&(!visited[i]))
-			{
-				mindistance=distance[i];
-				visitednode=i;
-			}
-		}
-		
-		//check better path exists through visitednode	
-		visited[visitednode]=1;
-		for(i=0;i < n;i++)
-		{
-			if(!visited[i])             //runs only if the node is not visited
-			{
-				if((mindistance+cost[visitednode][i]) < distance[i])
-				{
-					distance[i]=mindistance+cost[visitednode][i];
-					pred[i]=visitednode;
-				}
-			}	count++;
-		}	
-		
-	}
- 
-	for(i=0;i < n;i++)
-	{
-		if(i!=startnode)
-		{
-			printf("\nDistance of %d = %d", i+1, distance[i]);
-			printf("\nPath = %d", i+1);
-			j=i;
-			
-			do
-			{
-				j=pred[j];
-				printf(" <-%d", j+1);
-			
-			}while(j!=startnode);
-		    
-        }
-    }   
-}
-
-// Implementing bellman algorithm
-void bellman(int G[Max][Max],int n,int startnode)
-{
-    int distance[Max];      /* distance to i node from starting node*/
-    int pred[Max];
-	int i,j,k;
-	int count=0;
-	//we initialize all distance to infinity except source.
-	for(i=0;i<n;i++)
-	{
-		distance[i]=Infinity;
-	}
-		//mark the source vertex
-	distance[startnode]=0;
-	//relax edges |V|-1 times
-	for(k=0;k<n-1;k++)
-	{
-		for(i=0;i<n;i++)
-		{
-			for(j=0;j<n;j++)
-			{
-				if(G[i][j]!=0 && (distance[j]>distance[i]+G[i][j]))    
-				{
-					distance[j]=distance[i]+G[i][j];
-				}
-			}
-		}
-	}
-	
-	
-    //detect negative cycle
-    //if value changes then we have a negative cycle in the graph
-    //and we cannot find the shortest distances
-	for(i=0;i<n;i++)
-	{
-		for(j=0;j<n;j++)
-		{
-			if(G[i][j]!=0 && distance[j]>distance[i]+G[i][j])
-			{
-				distance[j]=distance[i]+G[i][j];
-				count++;
-			}
-		}
-	}
-	if(count!=0)
-	{
-		puts("Negative Cycle Found");
-	}
-	else
-	{   for(i=0;i<n;i++) 
-		{
-		    if(i!=startnode)
-		    {
-			    printf("path = %d <-- %d \t cost = %d\n",i+1,startnode+1,distance[i]);
-	        }
-	    }
-	}
-
-}
-
-
-
-
-// Implementing floyd-warshall algorithm
-void FloydWarshall(int G[Max][Max], int n) 
-{
-    int matrix[Max][Max];
-    int i, j, k;        //Loop Variables
-
-    for (i = 0; i < n; i++)
-    {
-        for (j = 0; j < n; j++)
-        {
-            matrix[i][j] = G[i][j];
-        }
-    }  
-     
-  // Adding vertices individually
-    for (k = 0; k < n; k++) 
-    {    
-        for (i = 0; i < n; i++) 
-        {
-            for (j = 0; j < n; j++) 
-            {
-                if (matrix[i][k] + matrix[k][j] < matrix[i][j])
-                {    
-                    matrix[i][j] = matrix[i][k] + matrix[k][j];
-                }    
-            }
-        }
-    }
-    for (int i = 0; i < n; i++) 
-    {
-        for (int j = 0; j < n; j++) 
-        {
-            if (matrix[i][j] == Infinity)
-            {
-                printf("%4s", "INF");
-            }    
-            else
-            {    
-                printf("%4d", matrix[i][j]);
-            }
-        }
-        printf("\n");
-    }
-}
-
-
-
-
-int main()
-{
+void dijkstra(int G[Max][Max], int n , int start);
+void bellman(int G[Max][Max],int n,int start);
+void floydWarshall(int graph[][Max]);
+int main(){
 	int G[Max][Max],i,j,n,u;
 	int p,q;
-	printf("Enter number of vertices: ");
+	printf("Enter number of vertices :");
 	scanf("%d",&n);
 	printf("ENTER THE ADJACENCY MATRIX\n");
-	for(i=0;i<n;i++)
-	{		
-		for(j=0;j<n;j++)
-		{
+	for(i=0;i<n;i++){
+		
+		for(j=0;j<n;j++){
 			p=0;
 			q=0;
-			printf("Enter the distance %d to %d: ",p=i+1,q=j+1);
+			printf("Enter the distance %d to %d :- ",p=i+1,q=j+1);
 			scanf("%d",&G[i][j]);
 		}
 	}
@@ -222,73 +32,187 @@ int main()
         }
         printf("\n");
     }
-    
-/*  printf("\n\n");
-    for(i=0;i<150;i++)
-    {
+    printf("\n\n");
+    for(i=0;i<150;i++){
     	printf("++");
 	}
-*/	
-	
 	printf("\n\n");
 	printf("Enter the Starting Node (Number) :\n");
 	scanf("%d",&u);
-	u--;
+	u=u-1;
 	printf("\n\n");
-/*  for(i=0;i<150;i++)
-    {
+    for(i=0;i<150;i++){
     	printf("**");
 	}
-*/	
 	printf("\n\n");
 	clock_t start,stop;
-	printf("*** DIJKSTRA ALGORITHM ***");
+	printf("--: DIJKSTRA ALGORITHM :--");
 	start = clock();
-	dijikstra(G,n,u);
+	dijkstra(G,n,u);
 	stop = clock();
-	double runtime_Dij= ((double) stop - start)/ CLOCKS_PER_SEC;
-	printf("\nRuntime time of Dijkastra is: %f",runtime_Dij);
+	double runtime= ((double) stop - start)/ CLOCKS_PER_SEC;
+	printf("\n Runtime time of Dijkstra is : %f",runtime);
 	printf("\n\n");
-/*  for(i=0;i<150;i++)
-    {
+    for(i=0;i<150;i++){
     	printf("--");
 	}
-*/
-
 	printf("\n\n");
-	printf("*** BELLMAN FORD ALGORITHMS ***");
+	printf("--: BELLMAN-FORD ALGORITHMS :--");
 	printf("\n");
 	start = clock();
 	bellman(G,n,u);
 	stop = clock();
-	double runtime_Bel= ((double) stop - start)/ CLOCKS_PER_SEC;
-	printf("\nRuntime time of bellman is: %f",runtime_Bel);
+	double runtime_bellman= ((double) stop - start)/ CLOCKS_PER_SEC;
+	printf("\n Runtime time of bellman is : %f",runtime_bellman);
 	printf("\n\n");
-	
-	
-/*  for(i=0;i<150;i++)
-    {
+    for(i=0;i<150;i++){
     	printf("--");
 	}
-*/
-
-    printf("\n\n");
-	printf("*** floydWarshall ALGORITHMS ***");
+	printf("\n\n");
+	printf("--: floydWarshall ALGORITHMS :--");
 	printf("\n");
 	start = clock();
-	FloydWarshall(G,n);
+	floydWarshall(G);
 	stop = clock();
-	double runtime_floyd= ((double) stop - start)/ CLOCKS_PER_SEC;
-	printf("\n Runtime time of floydWarshall is: %f",runtime_floyd);
+	double runtime_floydWarshall= ((double) stop - start)/ CLOCKS_PER_SEC;
+	printf("\n Runtime time of floydWarshall is : %f",runtime_floydWarshall);
 	printf("\n\n");
-  
- 
-/*    for(i=0;i<150;i++)
-    {
+    for(i=0;i<150;i++){
     	printf("--");
 	}
-*/	
-
-    printf("\n\n");
 	return 0;
-}	
+}
+// Implementing dijkstra algorithm
+void dijkstra(int G[Max][Max], int n, int startnode)
+{
+	int cost[Max][Max], distance[Max], pred[Max];
+	int visited[Max], count, mindistance, nextnode, i,j;
+	int p=0,q=0;
+		//pred[] stores the predecessor of each node
+	//count gives the number of nodes seen so far
+	//create the cost matrix
+	for(i=0;i < n;i++)
+		for(j=0;j < n;j++)
+			if(G[i][j]==0)
+				cost[i][j]=Infinity;
+			else
+				cost[i][j]=G[i][j];
+	//initialize pred[],distance[] and visited[]
+	for(i=0;i< n;i++)
+	{
+		distance[i]=cost[startnode][i];
+		pred[i]=startnode;
+		visited[i]=0;
+	}
+	distance[startnode]=0;
+	visited[startnode]=1;
+	count=1;
+	while(count < n-1){
+		mindistance=Infinity;
+		//nextnode gives the node at minimum distance
+		for(i=0;i < n;i++)
+			if(distance[i] < mindistance&&!visited[i])
+			{
+				mindistance=distance[i];
+				nextnode=i;
+			}
+//check better path exists through nextnode			
+		visited[nextnode]=1;
+		for(i=0;i < n;i++)
+			if(!visited[i])
+				if(mindistance+cost[nextnode][i] < distance[i])
+				{
+					distance[i]=mindistance+cost[nextnode][i];
+					pred[i]=nextnode;
+				}
+			count++;
+	}
+ //print the path and distance of each node
+	for(i=0;i < n;i++)
+		{
+			p=i+1;
+			printf("\nDistance of %d = %d", p, distance[i]);
+			printf("\nPath = %d", p);
+			j=i;
+			
+			do
+			{
+				j=pred[j];
+				q=j+1;
+				printf(" <-%d", q);
+			}
+			while(j!=startnode);
+		}
+}
+// Implementing bellman algorithm
+void bellman(int G[Max][Max],int n,int start)
+{
+    int dis[Max];
+    int pred[Max];
+	int i,j,k;
+	int count =0;
+	//we initialize all distance to infinity except source.
+	for(i=0;i<n;i++){
+		dis[i]=Infinity;
+		}
+		//mark the source vertex
+	dis[start]=0;
+	//relax edges |V|-1 times
+	for(k=0;k<n-1;k++){
+		for(i=0;i<n;i++){
+			for(j=0;j<n;j++){
+				if(G[i][j]!=0 && dis[j]>dis[i]+G[i][j]){
+					dis[j]=dis[i]+G[i][j];
+				}
+			}
+		}
+	}
+	//detect negative cycle
+  //if value changes then we have a negative cycle in the graph
+  //and we cannot find the shortest distances
+	for(i=0;i<n;i++){
+		for(j=0;j<n;j++){
+			if(G[i][j]!=0 && dis[j]>dis[i]+G[i][j]){
+				dis[j]=dis[i]+G[i][j];
+				count++;
+			}
+		}
+	}
+	if(count!=0){
+		puts("Negative Cycle Found");
+	}else{
+		for(i=0;i<n;i++){
+			printf("path = %d <-- %d \t cost = %d\n",i+1,start+1,dis[i]);
+	}
+	}
+
+}
+
+
+// Implementing floyd-warshall algorithm
+void floydWarshall(int graph[Max][Max]) {
+  int matrix[Max][Max], i, j, k,n;
+
+  for (i = 0; i < n; i++)
+    for (j = 0; j < n; j++)
+      matrix[i][j] = graph[i][j];
+    
+  // Adding vertices individually
+  for (k = 0; k < n; k++) {
+    for (i = 0; i < n; i++) {
+      for (j = 0; j < n; j++) {
+        if (matrix[i][k] + matrix[k][j] < matrix[i][j])
+          matrix[i][j] = matrix[i][k] + matrix[k][j];
+      }
+    }
+  }
+ for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (matrix[i][j] == Infinity)
+        printf("%4s", "INF");
+      else
+        printf("%4d", matrix[i][j]);
+    }
+    printf("\n");
+  }
+}
